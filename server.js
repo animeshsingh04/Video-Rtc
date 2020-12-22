@@ -34,7 +34,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('ready', function (room){
-        console.log('ready')
+        console.log('-----------------------ready')
         socket.broadcast.to(room).emit('ready');
     });
 

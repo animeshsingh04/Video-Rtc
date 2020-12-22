@@ -58,6 +58,7 @@ socket.on('joined', function (room) {
 });
 
 socket.on('candidate', function (event) {
+    console.log("get the candidates")
     var candidate = new RTCIceCandidate({
         sdpMLineIndex: event.label,
         candidate: event.candidate
@@ -92,6 +93,7 @@ socket.on('ready', function () {
 socket.on('offer', function (event) {
     console.log("----------------------------------------------offer")
     if (!isCaller) {
+        console.log("----------------------------------------------inside offer")
         rtcPeerConnection = new RTCPeerConnection(iceServers);
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
@@ -133,6 +135,8 @@ function onIceCandidate(event) {
 }
 
 function onAddStream(event) {
+    console.log(event)
     remoteVideo.srcObject = event.streams[0];
-    remoteStream = event.stream;
+    console.log(remoteVideo.srcObject)
+    remoteStream = event.streams[0];
 }
