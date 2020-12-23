@@ -1,0 +1,10 @@
+
+.call-action-div {
+    position: absolute;
+    left: 45%;
+    bottom: 32px;
+}
+
+button {
+    cursor: pointer;
+}

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <head>
-    <title>WebRTC Video Conference Tutorial - Plain WebRTC</title>
+    <title>WebRTC Video Plain</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <h1>WebRTC Video Conference Tutorial - Plain WebRTC</h1>
+    <h1>WebRTC Video Conference App</h1>
 
     <div id="selectRoom">
         <label>Type the room number</label>
@@ -14,6 +15,10 @@
     <div id="consultingRoom" style="display:none">
         <video id="localVideo" autoplay></video>
         <video id="remoteVideo" autoplay></video>
+        <div class="call-action-div">
+            <button onclick="muteVideo()">Mute Video</button>
+            <button onclick="muteAudio()">Mute Audio</button>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

@@ -36,7 +36,6 @@ btnGoRoom.onclick = function () {
 
 // message handlers
 socket.on('created', function (room) {
-    console.log('--------------------------------------------------Created')
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
         localStream = stream;
         localVideo.srcObject = stream;
@@ -47,7 +46,6 @@ socket.on('created', function (room) {
 });
 
 socket.on('joined', function (room) {
-    console.log('------------------------------------------------------joined')
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
         localStream = stream;
         localVideo.srcObject = stream;
@@ -58,7 +56,6 @@ socket.on('joined', function (room) {
 });
 
 socket.on('candidate', function (event) {
-    console.log("get the candidates")
     var candidate = new RTCIceCandidate({
         sdpMLineIndex: event.label,
         candidate: event.candidate
@@ -67,11 +64,9 @@ socket.on('candidate', function (event) {
 });
 
 socket.on('ready', function () {
-    console.log('------------------------------------------ready')
     if (isCaller) {
         rtcPeerConnection = new RTCPeerConnection(iceServers);
         rtcPeerConnection.onicecandidate = onIceCandidate;
-        console.log("----------------------ffffffffffffffffffff",rtcPeerConnection)
         rtcPeerConnection.ontrack = onAddStream;
         rtcPeerConnection.addTrack(localStream.getTracks()[0], localStream);
         rtcPeerConnection.addTrack(localStream.getTracks()[1], localStream);
@@ -91,9 +86,7 @@ socket.on('ready', function () {
 });
 
 socket.on('offer', function (event) {
-    console.log("----------------------------------------------offer")
     if (!isCaller) {
-        console.log("----------------------------------------------inside offer")
         rtcPeerConnection = new RTCPeerConnection(iceServers);
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
@@ -116,14 +109,12 @@ socket.on('offer', function (event) {
 });
 
 socket.on('answer', function (event) {
-    console.log('------------------------------answer')
     rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
 })
 
 // handler functions
 function onIceCandidate(event) {
     if (event.candidate) {
-        console.log('sending ice candidate');
         socket.emit('candidate', {
             type: 'candidate',
             label: event.candidate.sdpMLineIndex,
@@ -135,8 +126,17 @@ function onIceCandidate(event) {
 }
 
 function onAddStream(event) {
-    console.log(event)
     remoteVideo.srcObject = event.streams[0];
-    console.log(remoteVideo.srcObject)
     remoteStream = event.streams[0];
+}
+let isAudio = true
+function muteAudio() {
+    isAudio = !isAudio
+    localStream.getAudioTracks()[0].enabled = isAudio
+}
+
+let isVideo = true
+function muteVideo() {
+    isVideo = !isVideo
+    localStream.getVideoTracks()[0].enabled = isVideo
 }
