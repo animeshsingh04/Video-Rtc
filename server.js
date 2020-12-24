@@ -39,17 +39,17 @@ io.on('connection', function (socket) {
     });
 
     socket.on('candidate', function (event){
-        console.log("candidate",event)
+        console.log("candidate------------------------------",event)
         socket.broadcast.to(event.room).emit('candidate', event);
     });
 
     socket.on('offer', function(event){
-        console.log('offer',event)
+        console.log('offer-------------------------------',event)
         socket.broadcast.to(event.room).emit('offer',event.sdp);
     });
 
     socket.on('answer', function(event){
-        console.log('answer',event)
+        console.log('answer---------------------------------',event)
         socket.broadcast.to(event.room).emit('answer',event.sdp);
     });
 
