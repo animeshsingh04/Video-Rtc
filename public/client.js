@@ -135,6 +135,7 @@ function onIceCandidate(event) {
 
 function onAddStream(event) {
     remoteVideo.srcObject = event.streams[0];
+    console.log("remoteVideo stream",remoteVideo.srcObject)
     remoteStream = event.streams[0];
 }
 let isAudio = true
