@@ -14,7 +14,32 @@ var rtcPeerConnection;
 var iceServers = {
     'iceServers': [
         { 'urls': 'stun:cognived.synology.me:32770' },
-        { 'urls': 'stun:cognived.synology.me:32769' }
+        { 'urls': 'stun:cognived.synology.me:32769' },
+        {
+            url: 'turn:numb.viagenie.ca',
+            credential: 'muazkh',
+            username: 'webrtc@live.com'
+        },
+        {
+            url: 'turn:192.158.29.39:3478?transport=udp',
+            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+            username: '28224511:1379330808'
+        },
+        {
+            url: 'turn:192.158.29.39:3478?transport=tcp',
+            credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+            username: '28224511:1379330808'
+        },
+        {
+            url: 'turn:turn.bistri.com:80',
+            credential: 'homeo',
+            username: 'homeo'
+         },
+         {
+            url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+            credential: 'webrtc',
+            username: 'webrtc'
+        }
     ]
 }
 var streamConstraints = { audio: true, video: true };
