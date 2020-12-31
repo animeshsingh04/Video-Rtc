@@ -7,11 +7,10 @@ var localVideo = document.getElementById("localVideo");
 var remoteVideo = document.getElementById("remoteVideo");
 
 // variables
-var roomNumber;
-var localStream;
-var remoteStream;
-var rtcPeerConnection;
-var iceServers = {
+var roomNumber, localStream, remoteStream, rtcPeerConnection;
+
+// stun and turn servers for NAT
+const iceServers = {
     'iceServers': [
         { 'urls': 'stun:cognived.synology.me:32770' },
         { 'urls': 'stun:cognived.synology.me:32769' },
@@ -45,9 +44,10 @@ var iceServers = {
 var streamConstraints = { audio: true, video: true };
 var isCaller;
 
-// Let's do this
+// socket object
 var socket = io();
 
+// routine on click of button "start call"
 btnGoRoom.onclick = function () {
     if (inputRoomNumber.value === '') {
         alert("Please type a room number")
@@ -61,9 +61,7 @@ btnGoRoom.onclick = function () {
 
 // message handlers
 socket.on('created', function (room) {
-    console.log("Room Created-------------------")
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
-        console.log("After Creating Room trying to acces the user Media devices -> stream", stream)
         localStream = stream;
         localVideo.srcObject = stream;
         isCaller = true;
@@ -72,10 +70,9 @@ socket.on('created', function (room) {
     });
 });
 
+
 socket.on('joined', function (room) {
-    console.log("When Someone joins the Room with same room number------")
     navigator.mediaDevices.getUserMedia(streamConstraints).then(function (stream) {
-        console.log("After joining Room trying to acces the user Media devices -> stream", stream)
         localStream = stream;
         localVideo.srcObject = stream;
         socket.emit('ready', roomNumber);
@@ -85,7 +82,7 @@ socket.on('joined', function (room) {
 });
 
 socket.on('candidate', function (event) {
-    var candidate = new RTCIceCandidate({
+    let candidate = new RTCIceCandidate({
         sdpMLineIndex: event.label,
         candidate: event.candidate
     });
@@ -93,7 +90,6 @@ socket.on('candidate', function (event) {
 });
 
 socket.on('ready', function () {
-    console.log("After other joins the room, signaling Ready get's called")
     if (isCaller) {
         rtcPeerConnection = new RTCPeerConnection(iceServers);
         rtcPeerConnection.onicecandidate = onIceCandidate;
@@ -116,9 +112,7 @@ socket.on('ready', function () {
 });
 
 socket.on('offer', function (event) {
-    console.log("creating offer to join the room")
     if (!isCaller) {
-        console.log("offer Created")
         rtcPeerConnection = new RTCPeerConnection(iceServers);
         rtcPeerConnection.onicecandidate = onIceCandidate;
         rtcPeerConnection.ontrack = onAddStream;
@@ -147,7 +141,6 @@ socket.on('answer', function (event) {
 // handler functions
 function onIceCandidate(event) {
     if (event.candidate) {
-        console.log("gathering ICe candidate", event.candidate)
         socket.emit('candidate', {
             type: 'candidate',
             label: event.candidate.sdpMLineIndex,
@@ -158,17 +151,20 @@ function onIceCandidate(event) {
     }
 }
 
+// sub-process which would add peer stream to the other enduser window
 function onAddStream(event) {
     remoteVideo.srcObject = event.streams[0];
-    console.log("remoteVideo stream",remoteVideo.srcObject)
     remoteStream = event.streams[0];
 }
+
+// routine to mute Audio
 let isAudio = true
 function muteAudio() {
     isAudio = !isAudio
     localStream.getAudioTracks()[0].enabled = isAudio
 }
 
+// routine to mute video
 let isVideo = true
 function muteVideo() {
     isVideo = !isVideo

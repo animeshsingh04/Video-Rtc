@@ -1,8 +1,8 @@
 //requires
 const express = require('express');
 const app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+let http = require('http').Server(app);
+let io = require('socket.io')(http);
 
 const port = process.env.PORT || 3000;
 
@@ -10,15 +10,14 @@ const port = process.env.PORT || 3000;
 app.use(express.static('public'));
 
 
-// signaling
+// signaling mechanism
 io.on('connection', function (socket) {
     console.log('a user connected');
 
     socket.on('create or join', function (room) {
         console.log('create or join to room ', room);
-        
-        var myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
-        var numClients = myRoom.length;
+        let myRoom = io.sockets.adapter.rooms[room] || { length: 0 };
+        let numClients = myRoom.length;
 
         console.log(room, ' has ', numClients, ' clients');
 
@@ -34,28 +33,24 @@ io.on('connection', function (socket) {
     });
 
     socket.on('ready', function (room){
-        console.log('-----------------------ready')
         socket.broadcast.to(room).emit('ready');
     });
 
     socket.on('candidate', function (event){
-        console.log("candidate------------------------------",event)
         socket.broadcast.to(event.room).emit('candidate', event);
     });
 
     socket.on('offer', function(event){
-        console.log('offer-------------------------------',event)
         socket.broadcast.to(event.room).emit('offer',event.sdp);
     });
 
     socket.on('answer', function(event){
-        console.log('answer---------------------------------',event)
         socket.broadcast.to(event.room).emit('answer',event.sdp);
     });
 
 });
 
-// listener
+// we would be running server on port number 3000
 http.listen(port || 3000, function () {
     console.log('listening on', port);
 });
